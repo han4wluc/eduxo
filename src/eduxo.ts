@@ -13,15 +13,15 @@ export type modelType<T, D> = {
   generateDispatchers: (dispatch: (action: action)=>void) => D
 }
 
-export default class Eduxora {
+export default class Eduxora<D> {
 
   store: Store;
   models: modelType<any,any>[];
+  dispatchers: D;
 
-  constructor (){
+  constructor (initialDispatchers: D){
     this.store = {
       dispatch: (action) => { 
-        console.warn('aaa')
         return action
       },
       getState: () => {},
@@ -29,6 +29,7 @@ export default class Eduxora {
       replaceReducer: () => {}
     };
     this.models = [];
+    this.dispatchers = initialDispatchers;
   }
 
   init = (middleware?: any) => {
@@ -48,6 +49,10 @@ export default class Eduxora {
     })
 
     this.store = createStore(combineReducers(reducerObject), middleware);
+  }
+
+  init2 = (dispatchers: D) => {
+    this.dispatchers = dispatchers;
   }
 
   getStore = () => {

@@ -1,5 +1,5 @@
 
-import { reducerType, reducersType, modelType } from './eduxo';
+import { reducerType, reducersType, modelType } from '../../src/eduxo';
 
 export type dispatchersType = {
   showLoading: () => void
@@ -19,7 +19,7 @@ const initialState = {
 }
 
 const model:modelType<stateType, dispatchersType> = {
-  namespace: 'hello',
+  namespace: 'home',
   initialState: initialState,
   reducers: {
     [actionTypes.showLoading]: (state = initialState, action) => {
@@ -45,5 +45,4 @@ const model:modelType<stateType, dispatchersType> = {
 
 }
 
-// export dispatchers = dipatchers;;
 export default model;
