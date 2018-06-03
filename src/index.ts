@@ -1,8 +1,41 @@
-export class C {
-    private x = 10
-    getX = () => this.x;
-    setX = (newVal: number) => { this.x = newVal; }
+
+import redux from 'redux';
+import model, * as modelTypes from './model';
+import Eduxo from './eduxo';
+
+class MyApp<T> extends Eduxo {
+
+  dispatchers: modelTypes.dispatchersType;
+
+  constructor() {
+    super();
+    // this.dispatchers = model.generateDispatchers(this.getStore().dispatch);
+    this.dispatchers = {
+      showLoading: () => {},
+    };
+
+  }
+
+  // init () {
+  //   super();
+  // }
+  init2 () {
+    this.dispatchers = model.generateDispatchers(this.getStore().dispatch);
+  }
+
 }
 
-export let x = new C();
-export let y = { ...{ some: "value" } }
+const app = new MyApp();
+
+app.require(model)
+app.init();
+app.init2();
+
+console.log(app.getState());
+app.dispatchers.showLoading();
+console.log(app.getState());
+
+
+
+
+

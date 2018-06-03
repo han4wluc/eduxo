@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "type-check": "tsc --noEmit",
-    "build": "tsc --emitDeclarationOnly && babel src --out-dir lib --extensions \".ts,.tsx\""
+    "build": "tsc --emitDeclarationOnly && babel src --out-dir lib --extensions \".ts,.tsx\"",
+    "watch": "tsc -w -p ."
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.49",
@@ -14,5 +15,10 @@
     "@babel/preset-env": "^7.0.0-beta.49",
     "@babel/preset-typescript": "^7.0.0-beta.49",
     "typescript": "^2.9.1"
+  },
+  "dependencies": {
+    "@types/react-redux": "^6.0.1",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0"
   }
 }
