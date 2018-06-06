@@ -1,48 +1,46 @@
+import { IModel, reducerType  } from '../../src/eduxo';
 
-import { reducerType, reducersType, modelType } from '../../src/eduxo';
-
-export type dispatchersType = {
-  showLoading: () => void
+export interface IDispatchers {
+  showLoading: () => void;
 }
 
-export type stateType = {
-  isLoading: boolean
+export interface IState {
+  isLoading: boolean;
 }
 
 export enum actionTypes {
-    showLoading = 'showLoading',
-    hideLoading = 'hideLoading'
+  showLoading = 'showLoading',
+  hideLoading = 'hideLoading',
 }
 
 const initialState = {
-  isLoading: false
-}
+  isLoading: false,
+};
 
-const model:modelType<stateType, dispatchersType> = {
+const model: IModel<IState, IDispatchers> = {
   namespace: 'home',
-  initialState: initialState,
+  initialState,
   reducers: {
     [actionTypes.showLoading]: (state = initialState, action) => {
       return {
-        isLoading: true
-      }
+        isLoading: true,
+      };
     },
     [actionTypes.hideLoading]: (state = initialState, action) => {
       return {
-        isLoading: false
-      }
-    }
+        isLoading: false,
+      };
+    },
   },
-  generateDispatchers: (dispatch) => {
+  generateDispatchers: dispatch => {
     return {
       showLoading: () => {
         dispatch({
-          type: actionTypes.showLoading
-        })
-      }
-    }
-  }
-
-}
+          type: actionTypes.showLoading,
+        });
+      },
+    };
+  },
+};
 
 export default model;

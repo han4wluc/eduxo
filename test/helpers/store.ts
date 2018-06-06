@@ -1,17 +1,17 @@
 
 import redux from 'redux';
-import model, * as modelTypes from './model';
 import Eduxo from '../../src/eduxo';
+import model, * as modelTypes from './model';
 
-type dispatchersType = {
-  home: modelTypes.dispatchersType,
+export interface IDispatchers {
+  home: modelTypes.IDispatchers,
 }
 
 const initialDispatchers = {
-  home: model.generateDispatchers(()=>{})
+  home: model.generateDispatchers(()=>{return})
 }
 
-const app = new Eduxo<dispatchersType>(initialDispatchers);
+const app = new Eduxo<IDispatchers>(initialDispatchers);
 
 app.require(model)
 app.init();

@@ -1,70 +1,72 @@
+import {
+  AnyAction,
+  combineReducers,
+  createStore,
+  Dispatch,
+  Middleware,
+  Store,
+} from 'redux';
 
-import { createStore, combineReducers, Store, Middleware, Dispatch, AnyAction } from 'redux';
+export interface IAction { type: string; payload?: object | string }
 
-export type action = { type: string, payload?: object | string };
+export type reducerType<T> = (state: T, action: IAction) => T;
+export interface IReducers<T> { [s: string]: reducerType<T> }
 
-export type reducerType<T> = (state: T, action: action) => T;
-export type reducersType<T> = { [s: string]: reducerType<T>; };
+export interface IModel<T, D> {
+  namespace: string;
+  initialState: T;
 
-export type modelType<T, D> = {
-  namespace: string,
-  initialState: T,
-  reducers: reducersType<T>,
-  generateDispatchers: (dispatch: (action: action)=>void) => D
+  reducers: IReducers<T>;
+  generateDispatchers: (dispatch: (action: IAction) => void) => D;
 }
 
 export default class Eduxora<D> {
+  public store: Store;
+  public models: Array<IModel<any, any>>;
+  public dispatchers: D;
 
-  store: Store;
-  models: modelType<any,any>[];
-  dispatchers: D;
-
-  constructor (initialDispatchers: D){
+  constructor(initialDispatchers: D) {
     this.store = {
-      dispatch: (action) => { 
-        return action
+      dispatch: action => {
+        return action;
       },
-      getState: () => {},
-      subscribe: () => { return () => {} },
-      replaceReducer: () => {}
+      getState: () => {return},
+      subscribe: () => () => {return},
+      replaceReducer: () => {return},
     };
     this.models = [];
     this.dispatchers = initialDispatchers;
   }
 
-  init = (middleware?: any) => {
+  public init = (middleware?: any) => {
+    const reducerObject: IReducers<any> = {};
 
-    const reducerObject: reducersType<any> = {};
-
-    this.models.forEach((model)=>{
-      const reducerFunction : reducerType<any> = (state, action) => {
-        // console.warn('ccc')
-        // console.warn(Object.keys(model.reducers), action.type);
-        if(Object.keys(model.reducers).includes(action.type)){
+    this.models.forEach(model => {
+      const reducerFunction: reducerType<any> = (state, action) => {
+        if (Object.keys(model.reducers).includes(action.type)) {
           return model.reducers[action.type](state, action);
         }
         return model.initialState;
-      }
+      };
       reducerObject[model.namespace] = reducerFunction;
-    })
+    });
 
     this.store = createStore(combineReducers(reducerObject), middleware);
-  }
+  };
 
-  init2 = (dispatchers: D) => {
+  public init2 = (dispatchers: D) => {
     this.dispatchers = dispatchers;
-  }
+  };
 
-  getStore = () => {
+  public getStore = () => {
     return this.store;
-  }
+  };
 
-  getState = () => {
+  public getState = () => {
     return this.store.getState();
-  }
+  };
 
-  require = (model: modelType<any,any>) => {
-    this.models.push(model)
-  }
+  public require = (model: IModel<any, any>) => {
+    this.models.push(model);
+  };
 }
-
