@@ -2,7 +2,7 @@
 import * as React from 'react';
 
 export interface IPropStates {
-    count: number
+    isLoading: boolean
 }
 
 export interface IProps {

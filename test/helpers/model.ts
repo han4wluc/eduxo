@@ -57,34 +57,32 @@ const model: IModel<IState, IDispatchers> = {
       // };
     },
   },
-  generateDispatchers: dd => {
-    return {
-      [actionTypes.showLoadingLogic]: () => {
-        return createLogic({
-          type: actionTypes.showLoadingLogic,
-          latest: true,
-          process({ action: { payload } } : any, dispatch: any, done: any) {
-            dispatch({
-              type: 'showLoading'
-            })
-            done();
-          }
-        });
-      },
-      [actionTypes.incrementByLogic]: (count) => {
-        return createLogic({
-          type: actionTypes.incrementByLogic,
-          latest: true,
-          process({ action: { payload } } : any, dispatch: any, done: any) {
-            dispatch({
-              type: 'incrementBy',
-              payload
-            })
-            done();
-          }
-        });
-      }
-    };
+  dispatchers: {
+    [actionTypes.showLoadingLogic]: () => {
+      return createLogic({
+        type: actionTypes.showLoadingLogic,
+        latest: true,
+        process({ action: { payload } } : any, dispatch: any, done: any) {
+          dispatch({
+            type: 'showLoading'
+          })
+          done();
+        }
+      });
+    },
+    [actionTypes.incrementByLogic]: (count) => {
+      return createLogic({
+        type: actionTypes.incrementByLogic,
+        latest: true,
+        process({ action: { payload } } : any, dispatch: any, done: any) {
+          dispatch({
+            type: 'incrementBy',
+            payload
+          })
+          done();
+        }
+      });
+    }
   },
 };
 
