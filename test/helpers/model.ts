@@ -1,4 +1,4 @@
-import { IModel, reducerType  } from '../../src/eduxo';
+import { IModel } from '../../src/eduxo';
 
 export interface IDispatchers {
   showLoading: () => void;
