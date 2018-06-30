@@ -7,7 +7,7 @@
     "type-check": "tsc --noEmit",
     "build": "tsc --emitDeclarationOnly && babel src --out-dir lib --extensions \".ts,.tsx\"",
     "watch": "tsc -w -p .",
-    "test": "./node_modules/.bin/mocha --compilers ts:ts-node/register"
+    "test": "./node_modules/.bin/mocha --require ts-node/register test/*.spec.{ts,tsx}"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.49",

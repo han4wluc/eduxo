@@ -74,12 +74,16 @@ const model: IModel<IState, IDispatchers> = {
       return createLogic({
         type: actionTypes.incrementByLogic,
         latest: true,
-        process({ action: { payload } } : any, dispatch: any, done: any) {
-          dispatch({
+        process({ action: { payload } } : any) {
+          return {
             type: 'incrementBy',
             payload
-          })
-          done();
+          }
+          // dispatch({
+          //   type: 'incrementBy',
+          //   payload
+          // })
+          // done();
         }
       });
     }
