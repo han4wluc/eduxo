@@ -1,5 +1,6 @@
 import { combineReducers, createStore, Store, applyMiddleware } from 'redux';
 import { connect } from 'react-redux';
+import { posix } from 'path';
 
 // declare module 'redux-logic'
 // import { createLogicMiddleware, createLogic } from 'redux-logic';
@@ -21,7 +22,7 @@ export interface IModel<T, D> {
   initialState: T;
   reducers: IReducers<T>;
   generateDispatchers: (dispatch: (action: IAction) => void, deps?: object) => D;
-  logics?: Array<any>;
+  logics?: any[];
 }
 
 interface A {
@@ -55,7 +56,7 @@ export default class Eduxora<D> implements IClassInterface<D> {
   public models: Array<IModel<any, any>>;
   // public dispatchers!: D;
   private hasStore: boolean;
-  private logics: Array<any>;
+  private logics: any[];
 
   constructor() {
     // this.store = {};
@@ -81,7 +82,7 @@ export default class Eduxora<D> implements IClassInterface<D> {
     this.logics = modelLogics.concat(logics);
   }
 
-  public init = (reducers?: any, deps?: object, middlewares?: Array<any>) => {
+  public init = (reducers?: any, deps?: object, middlewares?: any[]) => {
     const reducerObject: IReducers<any> = {};
 
     this.models.forEach(model => {
@@ -94,7 +95,20 @@ export default class Eduxora<D> implements IClassInterface<D> {
       reducerObject[model.namespace] = reducerFunction;
     });
 
-    const logicMiddleware = createLogicMiddleware(this.logics, deps);
+
+    const possibleLogics : any[] = [];
+
+    this.models.forEach(model => {
+      const dispatchers = model.generateDispatchers(()=>{/**/}, deps);
+      Object.keys(dispatchers).forEach((key) => {
+        const possibleLogic : any = dispatchers[key]();
+        if(possibleLogic){
+          possibleLogics.push(possibleLogic);
+        }
+      });
+    })
+
+    const logicMiddleware = createLogicMiddleware(this.logics.concat(possibleLogics), deps);
     const middleware = applyMiddleware(
       logicMiddleware
     );
@@ -106,10 +120,62 @@ export default class Eduxora<D> implements IClassInterface<D> {
     //   this.dispatchers = {}
     // }
     this.models.forEach(model => {
-      // this.dispatchers = {
-      //   [model.namespace]: 2
+
+      // https://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically/9924463#9924463
+      var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+      var ARGUMENT_NAMES = /([^\s,]+)/g;
+      function getParamNames(func: any) {
+        var fnStr = func.toString().replace(STRIP_COMMENTS, '');
+        var result = fnStr.slice(fnStr.indexOf('(')+1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
+        if(result === null)
+          result = [];
+        return result;
+      }
+
+      const dispatchers = model.generateDispatchers(this.store.dispatch, deps);
+      const newDispatchers : any = {};
+      Object.keys(dispatchers).forEach((key) => {
+        // newDispatchers[key] = (...rest : any[]) => {
+        //   console.warn('arguments', rest)
+
+        newDispatchers[key] = () => {/**/};
+
+        // let possibleLogic = dispatchers[key]();
+        // if(possibleLogic) {
+
+        // }
+        // console.warn('dispatchers[key]', typeof dispatchers[key](), dispatchers[key]())
+
+        const paramsNames = getParamNames(dispatchers[key])
+        // console.warn('params', params);
+        newDispatchers[key] = (...rest: any[]) => {
+          let payload:any = {};
+          paramsNames.forEach((name: string, i: number)=>{
+            payload[name] = rest[i];
+          })
+          // console.warn('rest', rest)
+          // console.warn('payload', payload);
+          // arguments
+          // console.warn('arguments', rest)
+          // console.warn('func', func.toString())
+          this.store.dispatch({
+            type: key,
+            payload
+          })
+        }
+      })
+      this.dispatchers[model.namespace] = newDispatchers;
+
+      // this.dispatchers[model.namespace] = dispatchers;
+      // this.dispatchers[model.namespace] = {
+      //   'showLoading': () => {
+      //     this.store.dispatch({
+      //       type: 'showLoading'
+      //     })
+      //     // console.warn('okok')
+      //   }
       // }
-      this.dispatchers[model.namespace] = model.generateDispatchers(this.store.dispatch, deps);
+      // this.dispatchers[model.namespace] = model.generateDispatchers(this.store.dispatch, deps);
     });
   };
 
